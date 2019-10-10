@@ -1,0 +1,2 @@
+# dup
+ Finds duplicate lines.

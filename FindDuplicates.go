@@ -20,15 +20,12 @@ func FindDuplicates(input io.Reader, output io.Writer, args []string) {
 		countLines(input, counts)
 	} else {
 		for _, arg := range files {
-			f, err := os.Open(arg)
+			err := readFile(arg, output, counts)
 
 			if err != nil {
 				fmt.Fprintf(output, "%s %q: %v\n", ErrOpenFile, arg, err)
 				continue
 			}
-
-			countLines(f, counts)
-			f.Close()
 		}
 	}
 
@@ -45,6 +42,19 @@ func countLines(f io.Reader, counts map[string]int) {
 
 		counts[scanner.Text()]++
 	}
+}
+
+func readFile(fileName string, output io.Writer, counts map[string]int) error {
+	f, err := os.Open(fileName)
+
+	if err != nil {
+		return err
+	}
+
+	countLines(f, counts)
+	f.Close()
+
+	return nil
 }
 
 func printResults(output io.Writer, counts map[string]int) {

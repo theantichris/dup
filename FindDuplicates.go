@@ -4,7 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
+	"io/ioutil"
+	"strings"
 )
 
 // ErrOpenFile contains the message shown when a file cannot be open.
@@ -17,10 +18,10 @@ func FindDuplicates(input io.Reader, output io.Writer, args []string) {
 	files := args[1:]
 
 	if len(files) == 0 {
-		countLines(input, counts)
+		countFromInput(input, counts)
 	} else {
 		for _, arg := range files {
-			err := readFile(arg, output, counts)
+			err := countFromFile(arg, output, counts)
 
 			if err != nil {
 				fmt.Fprintf(output, "%s %q: %v\n", ErrOpenFile, arg, err)
@@ -31,8 +32,8 @@ func FindDuplicates(input io.Reader, output io.Writer, args []string) {
 	printResults(output, counts)
 }
 
-func countLines(f io.Reader, counts map[string]int) {
-	scanner := bufio.NewScanner(f)
+func countFromInput(input io.Reader, counts map[string]int) {
+	scanner := bufio.NewScanner(input)
 
 	for scanner.Scan() {
 		if scanner.Text() == "" {
@@ -43,15 +44,16 @@ func countLines(f io.Reader, counts map[string]int) {
 	}
 }
 
-func readFile(fileName string, output io.Writer, counts map[string]int) error {
-	f, err := os.Open(fileName)
+func countFromFile(fileName string, output io.Writer, counts map[string]int) error {
+	data, err := ioutil.ReadFile(fileName)
 
 	if err != nil {
 		return err
 	}
 
-	countLines(f, counts)
-	f.Close()
+	for _, line := range strings.Split(string(data), "\n") {
+		counts[line]++
+	}
 
 	return nil
 }

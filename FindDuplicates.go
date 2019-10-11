@@ -4,14 +4,34 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 )
+
+// ErrOpenFile contains the message shown when a file cannot be open.
+const ErrOpenFile = "an error occurred opening file"
 
 // FindDuplicates reads input lines and prints out which are duplicated with the
 // nubmer of times.
-func FindDuplicates(input io.Reader, output io.Writer) {
+func FindDuplicates(input io.Reader, output io.Writer, args []string) {
 	counts := make(map[string]int)
+	files := args[1:]
 
-	countLines(input, counts)
+	if len(files) == 0 {
+		countLines(input, counts)
+	} else {
+		for _, arg := range files {
+			f, err := os.Open(arg)
+
+			if err != nil {
+				fmt.Fprintf(output, "%s %q: %v\n", ErrOpenFile, arg, err)
+				continue
+			}
+
+			countLines(f, counts)
+			f.Close()
+		}
+	}
+
 	printResults(output, counts)
 }
 

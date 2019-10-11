@@ -24,7 +24,6 @@ func FindDuplicates(input io.Reader, output io.Writer, args []string) {
 
 			if err != nil {
 				fmt.Fprintf(output, "%s %q: %v\n", ErrOpenFile, arg, err)
-				continue
 			}
 		}
 	}

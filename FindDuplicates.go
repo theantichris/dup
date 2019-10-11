@@ -12,7 +12,7 @@ func FindDuplicates(input io.Reader, output io.Writer) {
 	counts := make(map[string]int)
 
 	countLines(input, counts)
-	printLines(output, counts)
+	printResults(output, counts)
 }
 
 func countLines(f io.Reader, counts map[string]int) {
@@ -27,7 +27,7 @@ func countLines(f io.Reader, counts map[string]int) {
 	}
 }
 
-func printLines(output io.Writer, counts map[string]int) {
+func printResults(output io.Writer, counts map[string]int) {
 	for line, n := range counts {
 		if n > 1 {
 			fmt.Fprintf(output, "%d\t%s\n", n, line)
